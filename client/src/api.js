@@ -1,30 +1,18 @@
-import { useState } from 'react';
-import { UsuariosAPI } from './api';
-import UserForm from './components/UserForm';
-import UserTable from './components/UserTable';
+﻿import axios from 'axios';
 
-export default function App() {
-  const [selected, setSelected] = useState(null);
-  const [reload, setReload] = useState(false);
+export const api = axios.create({
+  baseURL: 'http://localhost:4000/api'
+});
 
-  const handleEdit = async (username) => {
-    const data = await UsuariosAPI.get(username);
-    setSelected(data);
-  };
+export const UsuariosAPI = {
+  list: () => api.get('/usuarios').then(r => r.data),
+  get: (username) => api.get(`/usuarios/${username}`).then(r => r.data),
+  create: (data) => api.post('/usuarios', data).then(r => r.data),
+  update: (username, data) => api.put(`/usuarios/${username}`, data).then(r => r.data),
+  remove: (username) => api.delete(`/usuarios/${username}`).then(r => r.data)
+};
 
-  const refresh = () => setReload((v) => !v);
-
-  return (
-    <div style={{ padding: 20, display: 'grid', gap: 20 }}>
-      <h2>CRUD Usuarios – React + Vite + Node.js</h2>
-      <UserForm
-        selected={selected}
-        onSuccess={() => {
-          setSelected(null);
-          refresh();
-        }}
-      />
-      <UserTable onEdit={handleEdit} reload={reload} />
-    </div>
-  );
-}
+export const CatalogosAPI = {
+  estados: () => api.get('/estados').then(r => r.data),
+  tipos: () => api.get('/tipos').then(r => r.data)
+};
